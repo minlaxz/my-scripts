@@ -14,7 +14,7 @@ heading_output() {
     echo -e "${HEAD}$1${RESET}"
 }
 
-description_utput() {
+description_output() {
     echo -e "${OUTPUT}Description : $1 ${RESET}"
 }
 
@@ -46,7 +46,7 @@ install_cra() {
     download_cra() {
         curl -fsSL https://raw.githubusercontent.com/minlaxz/cra-by-noob/main/cra.sh -o $LAXZHOME/cra.sh
         chmod 755 $LAXZHOME/cra.sh
-        descriptionOutput "DONE - downloaded cra."
+        description_output "DONE - downloaded cra."
     }
     update_rc_cra() {
         sed -i '/alias cra/d' $LAXZHOME/.laxzrc # clean alias about cra in laxzrc
@@ -57,14 +57,14 @@ install_cra() {
             cat <<EOF >>$LAXZHOME/.laxzrc
 alias cra="$HOME/.laxz/cra.sh"
 EOF
-            descriptionOutput "DONE - cra alias is added to laxzrc"
+            description_output "DONE - cra alias is added to laxzrc"
         fi
     }
     finish_up_cra() {
         sed -i '/source $HOME\/\.laxz\/\.laxzrc/d' $HOME/.zshrc
         warning_output "DONE - laxzrc is cleaned from zshrc"
         echo "source $HOME/.laxz/.laxzrc" >>$HOME/.zshrc
-        description_utput "ya're good to go!\nJus run 'cra'"
+        description_output "ya're good to go!\nJus run 'cra'"
     }
     check_and_remove_cra
     download_cra
