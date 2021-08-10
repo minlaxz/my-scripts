@@ -30,7 +30,7 @@ error_output() {
 setup_laxzhome() {
     LAXZHOME=$HOME/.laxz
     mkdir -p $LAXZHOME
-    test -f $LAXZHOME/laxzrc || touch $LAXZHOME/laxzrc
+    test -f $LAXZHOME/.laxzrc || touch $LAXZHOME/.laxzrc
     # test -f $LAXZHOME/laxz.alias || touch $LAXZHOME/laxz.alias
 }
 
