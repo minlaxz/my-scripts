@@ -61,7 +61,9 @@ EOF
         fi
     }
     finish_up_cra() {
-        sed -i '/source $HOME\/\.laxz\/\.laxzrc/d' $HOME/.zshrc
+        # source /home/laxz/.laxz/.laxzrc
+        # sed -i '/source $HOME\/\.laxz\/\.laxzrc/d' $HOME/.zshrc
+        sed -i "/source \/home\/laxz\/\.laxz\/\.laxzrc/d" $HOME/.zshrc
         warning_output "DONE - laxzrc is cleaned from zshrc"
         echo "source $HOME/.laxz/.laxzrc" >>$HOME/.zshrc
         description_output "ya're good to go!\nJus run 'cra'"
