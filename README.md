@@ -7,7 +7,7 @@ TL;DR:
 Could be extended like this:
 
 ```shell
-curl -fsSL git.io/minlaxz.sh | bash -s -- -i
+curl -fsSL git.io/minlaxz.sh | bash -s -- -i <cra> <laxz>
 # -f (HTTP)  Fail  silently  (no  output at all) on server errors.
 # -s (SILENT)  Suppress  all  output, makes Curl mute.
 # -S When used with -s it makes curl show an error message if it fails.
@@ -15,7 +15,7 @@ curl -fsSL git.io/minlaxz.sh | bash -s -- -i
 # initial host. If a redirect takes curl to a different host, it won't  be  able  to  intercept  the user+password.
 ```
 
-[git.io](https://git.io) is a URL shorter that generates a short URL for a given **Github** repository or url.
+[git.io](https://git.io) is a URL shorter that generates a random short URL for a given **Github repository or url**.
 
 ### How to generate a short URL with custom names
 
