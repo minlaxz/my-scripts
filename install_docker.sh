@@ -1,19 +1,12 @@
 #!/bin/bash
 
-docker_install_options() {
+install_docker() {
     cat <<EOF 2>&1
     This script will install the following:
     - Docker
     - Docker Compose
 EOF
-}
-
-install_options() {
-    cat <<EOF 2>&1
-    1) Install Docker and Docker Compose
-    2) Exit
-EOF
-
+    echo "Done - installed"
 }
 
 main() {
@@ -35,21 +28,8 @@ main() {
         exit 1
     fi
 
-    echo "All check passed, I am running..."
-    install_options
-    read -p "Please select an option: " option
-    case $option in
-        1)
-            docker_install_options
-            ;;
-        2)
-            exit 0
-            ;;
-        *)
-            echo "Invalid option" 1>&2
-            exit 1
-            ;;
-    esac
+    echo "All check passed, installing..."
+    install_docker
 }
 
 main

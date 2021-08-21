@@ -94,6 +94,28 @@ installer() {
     esac
 }
 
+sys_installer_help() {
+    warning_output "Unknown installer: $1"
+    echo "Options:"
+    echo "    docker : Install docker and docker-compose"
+    exit 1
+}
+
+sys_installer() {
+    case $1 in
+    "docker")
+        heading_output "Installing $1 and docker-compose"
+        curl -fsSL https://raw.githubusercontent.com/minlaxz/my-scripts/main/install_docker.sh -o /tmp/install_docker.sh
+        chmod 755 /tmp/install_docker.sh && /tmp/install_docker.sh
+        /usr/bin/rm -rf /tmp/install_docker.sh
+        echo "Clean up."
+        echo "Installed docker and docker-compose"
+        ;;
+    *) sys_installer_help $1 ;;
+    esac
+
+}
+
 check_shell() {
     # ps | grep $(echo $$) | awk '{ print $4 }'
     base_shell=$(basename $SHELL)
@@ -134,11 +156,7 @@ EOF
         echo "Uninstalling"
         ;;
     "-s" | "--setup")
-        echo "Setting up the system"
-        curl -fsSL https://raw.githubusercontent.com/minlaxz/my-scripts/main/sys_setup.sh -o /tmp/sys_setup.sh
-        chmod 755 /tmp/sys_setup.sh && /tmp/sys_setup.sh
-        /usr/bin/rm -rf /tmp/sys_setup.sh
-        echo "Clean up."
+        sys_installer "$2"
         ;;
     "-X")
         warning_output "Cleaning up everything about laxz."
