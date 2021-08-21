@@ -122,6 +122,7 @@ Usage: $0 [options]
         -h, --help      show this help message and exit
         -i, --install   install <laxz, cra>
         -u, --uninstall uninstall <laxz, cra>
+        -s, --setup     setup the system
         -X              Clean up everything about laxz
 EOF
 
@@ -131,6 +132,13 @@ EOF
         ;;
     "-u" | "--uninstall")
         echo "Uninstalling"
+        ;;
+    "-s" | "--setup")
+        echo "Setting up the system"
+        curl -fsSL https://raw.githubusercontent.com/minlaxz/my-scripts/main/sys_setup.sh -o /tmp/sys_setup.sh
+        chmod 755 /tmp/sys_setup.sh && /tmp/sys_setup.sh
+        /usr/bin/rm -rf /tmp/sys_setup.sh
+        echo "Clean up."
         ;;
     "-X")
         warning_output "Cleaning up everything about laxz."
