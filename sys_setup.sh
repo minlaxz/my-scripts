@@ -6,14 +6,13 @@ docker_install_options() {
     - Docker
     - Docker Compose
 EOF
+}
 
 install_options() {
     cat <<EOF 2>&1
     1) Install Docker and Docker Compose
     2) Exit
 EOF
-
-}
 
 }
 
