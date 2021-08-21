@@ -6,6 +6,7 @@ install_docker() {
     - Docker
     - Docker Compose
 EOF
+    sudo apt-get install curl
     echo "Done - installed"
 }
 

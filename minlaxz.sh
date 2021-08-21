@@ -108,8 +108,8 @@ sys_installer() {
         curl -fsSL https://raw.githubusercontent.com/minlaxz/my-scripts/main/install_docker.sh -o /tmp/install_docker.sh
         chmod 755 /tmp/install_docker.sh && /tmp/install_docker.sh
         /usr/bin/rm -rf /tmp/install_docker.sh
-        echo "Clean up."
-        echo "Installed docker and docker-compose"
+        echo "Caller : Cleaned up tmp."
+        echo "Caller : docker and docker-compose"
         ;;
     *) sys_installer_help $1 ;;
     esac
