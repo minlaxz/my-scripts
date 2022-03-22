@@ -10,19 +10,19 @@ NL='\n'
 ERROR='\e[3;31m'
 WARN='\e[3;33m'
 
-heading_output() {
+heading_out() {
     echo -e "${HEAD}$1${RESET}"
 }
 
-description_output() {
+description_out() {
     echo -e "${OUTPUT}Description : $1 ${RESET}"
 }
 
-warning_output() {
+warning_out() {
     echo -e "${WARN}Warning : $1 ${RESET}"
 }
 
-error_output() {
+error_out() {
     echo -e "${ERROR}Error : $1 ${RESET}"
     return 1
 }
@@ -35,38 +35,38 @@ setup_laxzhome() {
 }
 
 install_cra() {
-    heading_output "Installing CRA ..."
+    heading_out "Installing CRA ..."
     check_and_remove_cra() {
         if [ -f $LAXZHOME/cra.sh ]; then
-            warning_output "CHECK - found cra, removing ... "
+            warning_out "CHECK - found cra, removing ... "
             /usr/bin/rm -rf $LAXZHOME/cra.sh
         fi
-        warning_output "cra is removed."
+        warning_out "cra is removed."
     }
     download_cra() {
         curl -fsSL https://raw.githubusercontent.com/minlaxz/cra-by-noob/main/cra.sh -o $LAXZHOME/cra.sh
         chmod 755 $LAXZHOME/cra.sh
-        description_output "DONE - downloaded cra."
+        description_out "DONE - downloaded cra."
     }
     update_rc_cra() {
         sed -i '/alias cra/d' $LAXZHOME/.laxzrc # clean alias about cra in laxzrc
-        warning_output "DONE - cra alias is cleaned from laxzrc"
+        warning_out "DONE - cra alias is cleaned from laxzrc"
 
         if [ -f $LAXZHOME/cra.sh ]; then
             # cra exists
             cat <<EOF >>$LAXZHOME/.laxzrc
 alias cra="$HOME/.laxz/cra.sh"
 EOF
-            description_output "DONE - cra alias is added to laxzrc"
+            description_out "DONE - cra alias is added to laxzrc"
         fi
     }
     finish_up_cra() {
         # source /home/laxz/.laxz/.laxzrc
         # sed -i '/source $HOME\/\.laxz\/\.laxzrc/d' $HOME/.zshrc
         sed -i "/source \/home\/laxz\/\.laxz\/\.laxzrc/d" $HOME/.zshrc
-        warning_output "DONE - laxzrc is cleaned from zshrc"
+        warning_out "DONE - laxzrc is cleaned from zshrc"
         echo "source $HOME/.laxz/.laxzrc" >>$HOME/.zshrc
-        description_output "ya're good to go!\nJus run 'cra'"
+        description_out "ya're good to go!\nJus run 'cra'"
     }
     check_and_remove_cra
     download_cra
@@ -75,7 +75,7 @@ EOF
 }
 
 installer_help() {
-    warning_output "Unknown installer: $1"
+    warning_out "Unknown installer: $1"
     echo "Options:"
     echo "    laxz : Install LAXZ"
     echo "    cra  :  Install cra"
@@ -85,7 +85,7 @@ installer_help() {
 installer() {
     case $1 in
     "laxz")
-        heading_output "Installing laxz"
+        heading_out "Installing laxz"
         # Install laxz
         echo "Installed laxz"
         ;;
@@ -95,7 +95,7 @@ installer() {
 }
 
 sys_installer_help() {
-    warning_output "Unknown install unit: $1"
+    warning_out "Unknown install unit: $1"
     echo "Available Units:"
     echo "    docker : Install docker and docker-compose"
     exit 1
@@ -104,7 +104,7 @@ sys_installer_help() {
 sys_installer() {
     case $1 in
     "docker")
-        heading_output "Installing $1 and docker-compose"
+        heading_out "Installing $1 and docker-compose"
         curl -fsSL https://raw.githubusercontent.com/minlaxz/my-scripts/main/install_docker.sh -o /tmp/install_docker.sh
         chmod 755 /tmp/install_docker.sh && /tmp/install_docker.sh
         /usr/bin/rm -rf /tmp/install_docker.sh
@@ -119,14 +119,21 @@ sys_installer() {
 check_shell() {
     # ps | grep $(echo $$) | awk '{ print $4 }'
     base_shell=$(basename $SHELL)
-    # basename $0
-    if [[ $base_shell != "zsh" ]]; then
-        error_output "Other shell is not supported yet." # return 1
+    if [[ $base_shell != "bash" ]]; then
+        error_out "Only support 'bash' shell not ${base_shell}"
+        exit 1
+    fi
+}
+
+check_root() {
+    if [[ $EUID -ne 0 ]]; then
+        error_out "This script must be run as root"
+        exit 1
     fi
 }
 
 main_help() {
-    warning_output "Unknown option: $1"
+    warning_out "Unknown option: $1"
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  -h, --help     show help"
@@ -134,6 +141,7 @@ main_help() {
 }
 
 main() {
+    check_root
     check_shell
     setup_laxzhome
     case $1 in
@@ -142,9 +150,11 @@ main() {
 Usage: $0 [options]
     Options:
         -h, --help      show this help message and exit
-        -i, --install   install <laxz, cra>
-        -u, --uninstall uninstall <laxz, cra>
-        -s, --setup     setup the system
+        -i, --install   install {unit}
+        -u, --uninstall uninstall {unit}
+        -s, --setup     setup the your system
+        -t, --template  get a {unit} template for your application containerization
+        --test          test EUID.
         -X              Clean up everything about laxz
 EOF
 
@@ -165,7 +175,7 @@ EOF
         echo "Template"
         ;;
     "-X")
-        warning_output "Cleaning up everything about laxz."
+        warning_out "Cleaning up everything about laxz."
         rm -rf $LAXZHOME
         ;;
     *)
