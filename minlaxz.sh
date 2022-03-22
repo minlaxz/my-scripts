@@ -95,8 +95,8 @@ installer() {
 }
 
 sys_installer_help() {
-    warning_output "Unknown installer: $1"
-    echo "Options:"
+    warning_output "Unknown install unit: $1"
+    echo "Available Units:"
     echo "    docker : Install docker and docker-compose"
     exit 1
 }
@@ -158,8 +158,15 @@ EOF
     "-s" | "--setup")
         sys_installer "$2"
         ;;
+    "--test")
+        echo $(id -u)
+        ;;
+    "-t" | "--template")
+        echo "Template"
+        ;;
     "-X")
         warning_output "Cleaning up everything about laxz."
+        rm -rf $LAXZHOME
         ;;
     *)
         main_help "$1"
