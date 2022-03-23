@@ -1,10 +1,9 @@
-cat <<EOF >&2
 Usage: ... [options]
     Options:
-        -h, --help      show this help message and exit.
+        --help      show this help message and exit.
         -i, --install   install {unit}.
         -u, --uninstall uninstall {unit}.
-        -s, --setup     setup the your system.
+        -h, --how       TLDR a command.
+        -s, --sys       install {unit} on your system - needs root.
         -t, --template  get a {unit} template for your application containerization.
         -X              Clean up everything about me.
-EOF

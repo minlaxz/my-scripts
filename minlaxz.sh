@@ -1,31 +1,10 @@
 #!/bin/bash
 
-set -e # breack on error
-# curl ... | bash -s -- <options>
+# brake on error
+set -e 
 
-HEAD='\e[7;36m'
-RESET='\e[m'
-OUTPUT='\e[32m'
-NL='\n'
-ERROR='\e[3;31m'
-WARN='\e[3;33m'
-
-heading_out() {
-    echo -e "${HEAD}$1${RESET}"
-}
-
-description_out() {
-    echo -e "${OUTPUT}Description : $1 ${RESET}"
-}
-
-warning_out() {
-    echo -e "${WARN}Warning : $1 ${RESET}"
-}
-
-error_out() {
-    echo -e "${ERROR}Error : $1 ${RESET}"
-    return 1
-}
+# curl -fsSL git.io/minlaxz.sh | bash -s -- <options>
+# Usage: ... [options]
 
 SCRIPT_REPO="my-scripts"
 BRANCH="main"
@@ -33,10 +12,20 @@ GH_MINLAXZ="https://raw.githubusercontent.com/minlaxz"
 SCRIPT_REPO_URL="${GH_MINLAXZ}/${SCRIPT_REPO}/${BRANCH}"
 
 setup_laxzhome() {
+    flag=$1
     LAXZHOME=$HOME/.laxz
     mkdir -p $LAXZHOME
-    test -f $LAXZHOME/.laxzrc || touch $LAXZHOME/.laxzrc
-    # test -f $LAXZHOME/laxz.alias || touch $LAXZHOME/laxz.alias
+    # check if flag is set
+    if [ -z "$flag" ]; then
+        # not set, so leave files as is
+        test -f $LAXZHOME/.laxzrc || touch $LAXZHOME/.laxzrc
+        test -f $LAXZHOME/laxz.alias || touch $LAXZHOME/laxz.alias
+    else
+        # set, re-create files
+        touch $LAXZHOME/.laxzrc
+        touch $LAXZHOME/laxz.alias
+    fi
+    
 }
 
 install_cra() {
@@ -107,6 +96,7 @@ sys_installer_help() {
 }
 
 sys_installer() {
+    check_root
     case $1 in
     "docker")
         heading_out "Installing $1 and docker-compose"
@@ -157,11 +147,17 @@ main_help() {
 }
 
 main() {
-    check_sys_requirements
-    setup_laxzhome
+    curl ${SCRIPT_REPO_URL}/utils/common.sh -o /tmp/common.sh
+    chmod 755 /tmp/common.sh && . /tmp/common.sh
+    /usr/bin/rm -rf /tmp/common.sh
+    description_out "Loaded common colors."
+    sleep 0.5
+
+    check_sys_requirements # check linuc
+    setup_laxzhome # setup my home
     case $1 in
-    "" | "-h" | "--help")
-        curl -s ${SCRIPT_REPO_URL}/helpers/main.help.sh 1>&2
+    "" | "--help")
+        description_out $(curl -s ${SCRIPT_REPO_URL}/helpers/main.help.sh 1>&2)
         ;;
 
     "-i" | "--install")
@@ -178,6 +174,10 @@ main() {
 
     "-t" | "--template")
         echo "Template"
+        ;;
+
+    "-R" | "--refresh")
+        setup_laxzhome -r
         ;;
 
     "-X")
