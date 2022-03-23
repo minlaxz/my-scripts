@@ -20,12 +20,21 @@ setup_laxzhome() {
         # not set, so leave files as is
         test -f $LAXZHOME/.laxzrc || touch $LAXZHOME/.laxzrc
         test -f $LAXZHOME/laxz.alias || touch $LAXZHOME/laxz.alias
+        if [ ! -f $LAXZHOME/common.sh ]; then
+            curl -fsSL ${SCRIPT_REPO_URL}/utils/common.sh -o $LAXZHOME/common.sh
+            chmod 755 $LAXZHOME/common.sh && . $LAXZHOME/common.sh
+        else
+            . $LAXZHOME/common.sh
+        fi
     else
         # set, re-create files
         touch $LAXZHOME/.laxzrc
         touch $LAXZHOME/laxz.alias
+        rm -rf $LAXZHOME/common.sh
+        curl -fsSL ${SCRIPT_REPO_URL}/utils/common.sh -o $LAXZHOME/common.sh
+        chmod 755 $LAXZHOME/common.sh && . $LAXZHOME/common.sh
     fi
-    
+    description_out "Loaded common functions."
 }
 
 install_cra() {
@@ -81,11 +90,11 @@ installer() {
 }
 
 sys_installer() {
-    check_root
     case $1 in
     "docker")
+        check_root
         heading_out "Installing $1 and docker-compose"
-        curl -fsSL ${SCRIPT_REPO_URL}/utils/install_docker.sh -o /tmp/install_docker.sh
+        curl -fsSL ${SCRIPT_REPO_URL}/functions/install_docker.sh -o /tmp/install_docker.sh
         chmod 755 /tmp/install_docker.sh && /tmp/install_docker.sh
         /usr/bin/rm -rf /tmp/install_docker.sh
         echo "Caller : Cleaned up the TMP."
@@ -99,16 +108,21 @@ sys_installer() {
 
 }
 
+check_sys_requirements() {
+    description_out "Checking system requirements ..."
+    sleep 0.5
+    if [[ $(uname -s) != "Linux" ]]; then
+        error_out "This script only support linux"
+        exit 1
+    fi
+}
+
 main() {
     echo "minlaxz is here 👻, wait! spinning yup 👽 ..."
-    curl -s ${SCRIPT_REPO_URL}/utils/common.sh -o /tmp/common.sh
-    chmod 755 /tmp/common.sh && . /tmp/common.sh
-    /usr/bin/rm -rf /tmp/common.sh
-    description_out "Loaded common functions."
-    sleep 0.5
+    check_sys_requirements # check if it is >> linux
+    setup_laxzhome # setup my home >> including common.sh
+    sleep 1
 
-    check_sys_requirements # check linuc
-    setup_laxzhome # setup my home
     case $1 in
     "" | "--help")
         curl -s ${SCRIPT_REPO_URL}/helpers/main.help.sh 1>&2
