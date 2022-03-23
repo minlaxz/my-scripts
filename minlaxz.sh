@@ -27,6 +27,11 @@ error_out() {
     return 1
 }
 
+SCRIPT_REPO="my-scripts"
+BRANCH="main"
+GH_MINLAXZ="https://raw.githubusercontent.com/minlaxz"
+SCRIPT_REPO_URL="${GH_MINLAXZ}/${SCRIPT_REPO}/${BRANCH}"
+
 setup_laxzhome() {
     LAXZHOME=$HOME/.laxz
     mkdir -p $LAXZHOME
@@ -105,11 +110,10 @@ sys_installer() {
     case $1 in
     "docker")
         heading_out "Installing $1 and docker-compose"
-        curl -fsSL https://raw.githubusercontent.com/minlaxz/my-scripts/main/install_docker.sh -o /tmp/install_docker.sh
+        curl -fsSL ${SCRIPT_REPO_URL}/utils/install_docker.sh -o /tmp/install_docker.sh
         chmod 755 /tmp/install_docker.sh && /tmp/install_docker.sh
         /usr/bin/rm -rf /tmp/install_docker.sh
-        echo "Caller : Cleaned up tmp."
-        echo "Caller : docker and docker-compose"
+        echo "Caller : Cleaned up the TMP."
         ;;
     *) sys_installer_help $1 ;;
     esac
@@ -117,10 +121,12 @@ sys_installer() {
 }
 
 check_shell() {
+    # Supported shells: bash, zsh
     # ps | grep $(echo $$) | awk '{ print $4 }'
-    base_shell=$(basename $SHELL)
-    if [[ $base_shell != "bash" ]]; then
-        error_out "Only support 'bash' shell not ${base_shell}"
+    description_out "Checking shell ..."
+    sleep 0.5
+    if [ "$SHELL" != "/bin/bash" ] && [ "$SHELL" != "/usr/bin/zsh" ]; then
+        error_out "Unsupported shell: $SHELL"
         exit 1
     fi
 }
@@ -132,6 +138,16 @@ check_root() {
     fi
 }
 
+check_sys_requirements() {
+    description_out "Checking system requirements ..."
+    sleep 0.5
+    if [[ $(uname -s) != "Linux" ]]; then
+        error_out "This script only support linux"
+        exit 1
+    fi
+    check_shell
+}
+
 main_help() {
     warning_out "Unknown option: $1"
     echo "Usage: $0 [options]"
@@ -141,32 +157,38 @@ main_help() {
 }
 
 main() {
-    check_root
-    check_shell
+    check_sys_requirements
     setup_laxzhome
     case $1 in
     "" | "-h" | "--help")
-        curl -s https://raw.githubusercontent.com/minlaxz/my-scripts/main/helpers/main.help.sh 2>&1 
+        curl -s ${SCRIPT_REPO_URL}/helpers/main.help.sh 1>&2
         ;;
+
     "-i" | "--install")
         installer "$2"
         ;;
+
     "-u" | "--uninstall")
         echo "Uninstalling"
         ;;
+
     "-s" | "--setup")
         sys_installer "$2"
         ;;
+
     "-t" | "--template")
         echo "Template"
         ;;
+
     "-X")
         warning_out "Cleaning up everything about laxz."
         rm -rf $LAXZHOME
         ;;
+
     *)
         main_help "$1"
         ;;
+
     esac
 
 }
