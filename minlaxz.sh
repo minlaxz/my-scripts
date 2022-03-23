@@ -109,8 +109,8 @@ sys_installer() {
 }
 
 check_sys_requirements() {
-    description_out "Checking system requirements ..."
-    sleep 0.5
+    echo "Checking system requirements ..."
+    sleep 1
     if [[ $(uname -s) != "Linux" ]]; then
         error_out "This script only support linux"
         exit 1
