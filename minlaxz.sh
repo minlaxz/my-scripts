@@ -68,14 +68,6 @@ EOF
     finish_up_cra
 }
 
-installer_help() {
-    warning_out "Unknown installer: $1"
-    echo "Options:"
-    echo "    laxz : Install LAXZ"
-    echo "    cra  :  Install cra"
-    exit 1
-}
-
 installer() {
     case $1 in
     "laxz")
@@ -88,13 +80,6 @@ installer() {
     esac
 }
 
-sys_installer_help() {
-    warning_out "Unknown install unit: $1"
-    echo "Available Units:"
-    echo "    docker : Install docker and docker-compose"
-    exit 1
-}
-
 sys_installer() {
     check_root
     case $1 in
@@ -105,59 +90,28 @@ sys_installer() {
         /usr/bin/rm -rf /tmp/install_docker.sh
         echo "Caller : Cleaned up the TMP."
         ;;
-    *) sys_installer_help $1 ;;
+    *)
+        curl -s ${SCRIPT_REPO_URL}/helpers/sys.installer.help.sh -o /tmp/help.sh
+        chmod 755 /tmp/help.sh && . /tmp/help.sh
+        /usr/bin/rm -rf /tmp/help.sh
+        sys_installer_help $1 ;;
     esac
 
 }
 
-check_shell() {
-    # Supported shells: bash, zsh
-    # ps | grep $(echo $$) | awk '{ print $4 }'
-    description_out "Checking shell ..."
-    sleep 0.5
-    if [ "$SHELL" != "/bin/bash" ] && [ "$SHELL" != "/usr/bin/zsh" ]; then
-        error_out "Unsupported shell: $SHELL"
-        exit 1
-    fi
-}
-
-check_root() {
-    if [[ $EUID -ne 0 ]]; then
-        error_out "This script must be run as root"
-        exit 1
-    fi
-}
-
-check_sys_requirements() {
-    description_out "Checking system requirements ..."
-    sleep 0.5
-    if [[ $(uname -s) != "Linux" ]]; then
-        error_out "This script only support linux"
-        exit 1
-    fi
-    check_shell
-}
-
-main_help() {
-    warning_out "Unknown option: $1"
-    echo "Usage: $0 [options]"
-    echo "Options:"
-    echo "  -h, --help     show help"
-    exit 1
-}
-
 main() {
-    curl ${SCRIPT_REPO_URL}/utils/common.sh -o /tmp/common.sh
+    echo "minlaxz is here 👻, wait! spinning yup 👽 ..."
+    curl -s ${SCRIPT_REPO_URL}/utils/common.sh -o /tmp/common.sh
     chmod 755 /tmp/common.sh && . /tmp/common.sh
     /usr/bin/rm -rf /tmp/common.sh
-    description_out "Loaded common colors."
+    description_out "Loaded common functions."
     sleep 0.5
 
     check_sys_requirements # check linuc
     setup_laxzhome # setup my home
     case $1 in
     "" | "--help")
-        description_out $(curl -s ${SCRIPT_REPO_URL}/helpers/main.help.sh 1>&2)
+        curl -s ${SCRIPT_REPO_URL}/helpers/main.help.sh 1>&2
         ;;
 
     "-i" | "--install")
